@@ -1,5 +1,6 @@
 var express = require("express");
 var router = express.Router();
+var log = require("disnode-logger");
 var Database = require("../DB");
 var config = require("../config");
 var upd;
@@ -10,8 +11,10 @@ var Updater = require("../updater");
 
 router.use((req, res, next) => {
     if(req.headers.auth && req.headers.auth == config.auth){
+        log.Success("CasinoRouter", "Auth", "IP: " + req.ip + " Was granted access with auth: " + req.headers.auth + " to " + req.method + " " + req.url);
         next();
     }else{
+        log.Warning("CasinoRouter", "DENY FROM AUTH", "IP: " + req.ip + " Was denied access with auth: " + req.headers.auth + " to " + req.method + " " + req.url);
         res.status(401).send({error: "You are unauthorized! please provide an `auth` header with a correct auth key!"});
     }
 });
