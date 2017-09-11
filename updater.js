@@ -46,6 +46,7 @@ class Updater {
     updateUltraUsers(){
       var self = this;
       var currentUltras = [];
+      var ultras = [];
       var apiUltra = [];
       var newUltra = [];
       var notInApi = [];
@@ -55,48 +56,49 @@ class Updater {
             currentUltras.push(players[i]);
           }
         }
-        apiUltra = self.GetUltraUsers();
-  
-        for(var i = 0; i < currentUltras.length; i++){
-          var found = false;
-          for(var j = 0; j < apiUltra.length; j++){
-            if(currentUltras[i].id == apiUltra[j].id){
-              found = true;
-              break;
+        self.GetUltraUsers().then(function(apiUltra){
+            ultras = JSON.parse(JSON.stringify(apiUltra));
+            for(var i = 0; i < currentUltras.length; i++){
+              var found = false;
+              for(var j = 0; j < ultras.length; j++){
+                if(currentUltras[i].id == ultras[j].id){
+                  found = true;
+                  break;
+                }
+              }
+              if(!found){
+                notInApi.push(currentUltras[i]);
+              }
             }
-          }
-          if(!found){
-            notInApi.push(currentUltras[i]);
-          }
-        }
-        for(var i = 0; i < apiUltra.length; i++){
-          var found = false;
-          for(var j = 0; j < currentUltras.length; j++){
-            if(currentUltras[j].id == apiUltra[i].id){
-              found = true;
-              break;
+            for(var i = 0; i < ultras.length; i++){
+              var found = false;
+              for(var j = 0; j < currentUltras.length; j++){
+                if(currentUltras[j].id == ultras[i].id){
+                  found = true;
+                  break;
+                }
+              }
+              if(!found){
+                newUltra.push(ultras[i]);
+              }
             }
-          }
-          if(!found){
-            newUltra.push(currentUltras[i]);
-          }
-        }
-        for(var i = 0; i < newUltra.length; i++){
-            self.DB.Find("players", {"id":newUltra[i].id}).then((data) =>{
-                var p = data[0];
-                delete p["_id"];
-                p.Premium = true;
-                self.DB.Update("players", {"id":p.id}, p);
-            });
-        }
-        for(var i = 0; i < notInApi.length; i++){
-            self.DB.Find("players", {"id":notInApi[i].id}).then((data) =>{
-                var p = data[0];
-                delete p["_id"];
-                p.Premium = false;
-                self.DB.Update("players", {"id":p.id}, p);
-            });
-        }
+            for(var i = 0; i < newUltra.length; i++){
+                self.DB.Find("players", {"id":newUltra[i].id}).then((data) =>{
+                    var p = data[0];
+                    delete p["_id"];
+                    p.Premium = true;
+                    self.DB.Update("players", {"id":p.id}, p);
+                });
+            }
+            for(var i = 0; i < notInApi.length; i++){
+                self.DB.Find("players", {"id":notInApi[i].id}).then((data) =>{
+                    var p = data[0];
+                    delete p["_id"];
+                    p.Premium = false;
+                    self.DB.Update("players", {"id":p.id}, p);
+                });
+            }
+        });
       });
     }
     getElapsedTime(ms){

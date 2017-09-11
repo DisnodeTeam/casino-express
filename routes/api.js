@@ -28,10 +28,10 @@ router.get("/cobj",(req, res) => {
         res.status(200).send(cobj[0]);
     })
 });
-router.put("/cobj", (req,res) => {
+router.post("/cobj", (req,res) => {
     if(req.body){
         if(req.body.id && req.body.id == "cobj"){
-            Database.Update("casinoObj", {"id":"cobj"}, req.body.id).then(() => {
+            Database.Update("casinoObj", {"id":req.body.id}, req.body).then(() => {
                 res.status(200).send();
             })
         }else{
