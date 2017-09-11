@@ -9,7 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "axios": "^0.16.2",
     "body-parser": "^1.18.0",
+    "countdownjs": "^2.0.0",
     "disnode-logger": "^0.1.1",
     "express": "^4.15.4",
     "mongodb": "^2.2.31",

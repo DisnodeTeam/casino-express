@@ -4,19 +4,21 @@ var log = require("disnode-logger");
 this.db = null;
 module.exports.Connect = () => {
     var self = this;
-    mongo.connect("mongodb://" + config.username + ":" + config.pass + "@" + config.host).then(function(db){
-        if(self.int != null){
-            clearInterval(self.int);
-            self.int = null;
-        }
-        self.db = db;
-        self.db.on('close', function () {
-            log.Error("DB", "Disconnect", "Disconnected from DB! Attempting Reconnect!");
-            self.AttemptReconnect();
-        });
-        log.Success("DB", "Connect", "Connected to DB!");
-        return;
-    })
+    return new Promise(function (resolve, reject) {
+        mongo.connect("mongodb://" + config.username + ":" + config.pass + "@" + config.host).then(function(db){
+            if(self.int != null){
+                clearInterval(self.int);
+                self.int = null;
+            }
+            self.db = db;
+            self.db.on('close', function () {
+                log.Error("DB", "Disconnect", "Disconnected from DB! Attempting Reconnect!");
+                self.AttemptReconnect();
+            });
+            log.Success("DB", "Connect", "Connected to DB!");
+            resolve();
+        })
+    });
 }
 module.exports.Update = (collection, identifier, newData) => {
     var self = this;

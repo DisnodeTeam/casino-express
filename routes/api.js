@@ -2,7 +2,11 @@ var express = require("express");
 var router = express.Router();
 var Database = require("../DB");
 var config = require("../config");
-Database.Connect();
+var upd;
+Database.Connect().then(() => {
+    upd = new Updater(Database);
+});
+var Updater = require("../updater");
 
 router.use((req, res, next) => {
     if(req.headers.auth && req.headers.auth == config.auth){
@@ -13,7 +17,7 @@ router.use((req, res, next) => {
 });
 
 router.get("/time", (req, res) => {
-    res.send("some time left!");
+    res.status(200).send(upd.getTimeRemain());
 });
 router.get("/cobj",(req, res) => {
     Database.Find("casinoObj", {"id":"cobj"}).then((cobj) => {
