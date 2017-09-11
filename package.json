@@ -1,13 +1,13 @@
 {
-  "name": "casino-updater",
+  "name": "casino-express",
   "version": "1.0.0",
-  "description": "",
+  "description": "An Express REST API for Casino Bot",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "",
-  "license": "ISC",
+  "author": "FireGamer3 (Garrett Nicholas)",
+  "license": "GNU GPL 3",
   "dependencies": {
     "axios": "^0.16.2",
     "body-parser": "^1.18.0",
