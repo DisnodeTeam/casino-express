@@ -52,6 +52,19 @@ module.exports.AttemptReconnect = () => {
         this.Connect();
     }, 5000);
 }
+exports.Insert = (collection, data) => {
+		var self = this;
+		return new Promise(function (resolve, reject) {
+      var _collection = self.db.collection(collection);
+			_collection.insert(data, function (err, result) {
+				if(err){
+          reject(err);
+          return;
+        }
+				resolve(result);
+			});
+		});
+}
 module.exports.GetDB = () => {
     return this.db;
 }

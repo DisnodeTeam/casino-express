@@ -65,18 +65,6 @@ router.get("/players/:query", (req, res) => {
     res.status(404).send({error: "Failed with request"});
   })
 });
-router.get("/player/:id", (req,res) => {
-  Database.Find("players", {"id": req.params.id}).then((players) => {
-    for (var i = 0; i < players.length; i++) {
-      if(players[i].id == req.params.id){
-        delete players[i]["_id"];
-        res.status(200).send(players[i]);
-        return;
-      }
-    }
-    res.status(404).send();
-  })
-})
 router.post("/players/:id", (req,res) => {
   if(req.body){
       if(req.body.id && req.body.id == req.params.id){
@@ -89,6 +77,31 @@ router.post("/players/:id", (req,res) => {
   }else{
       res.status(400).send({error: "No Body"});
   }
+})
+router.post("/player/new", (req,res) => {
+  if(req.body){
+      if(req.body.id){
+          Database.Insert("players", {"id":req.body.id}, req.body).then(() => {
+              res.status(200).send();
+          })
+      }else{
+          res.status(400).send({error: "ID Mismatch"});
+      }
+  }else{
+      res.status(400).send({error: "No Body"});
+  }
+})
+router.get("/player/:id", (req,res) => {
+  Database.Find("players", {"id": req.params.id}).then((players) => {
+    for (var i = 0; i < players.length; i++) {
+      if(players[i].id == req.params.id){
+        delete players[i]["_id"];
+        res.status(200).send(players[i]);
+        return;
+      }
+    }
+    res.status(404).send();
+  })
 })
 router.post("/ultra/", (req,res) =>{
   console.log(req.body);
