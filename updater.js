@@ -83,19 +83,24 @@ class Updater {
               }
             }
             for(var i = 0; i < newUltra.length; i++){
+              console.log(newUltra);
                 self.DB.Find("players", {"id":newUltra[i].id}).then((data) =>{
+                  if (data != undefined) {
                     var p = data[0];
-                    delete p["_id"];
+                    if(p["_id"])delete p["_id"];
                     p.Premium = true;
                     self.DB.Update("players", {"id":p.id}, p);
+                  }
                 });
             }
             for(var i = 0; i < notInApi.length; i++){
                 self.DB.Find("players", {"id":notInApi[i].id}).then((data) =>{
+                  if (data != undefined) {
                     var p = data[0];
-                    delete p["_id"];
+                    if(p["_id"])delete p["_id"];
                     p.Premium = false;
                     self.DB.Update("players", {"id":p.id}, p);
+                  }
                 });
             }
         });
@@ -145,11 +150,12 @@ class Updater {
         var self = this;
         self.DB.Find("players", {}).then(function(players) {
           for (var i = 0; i < players.length; i++) {
+            delete players[i]["_id"];
             if(players[i].lastSeen == undefined){
               self.updateLastSeen(players[i]);
             }
-            if(players[i].rules == undefined){
-              players[i].rules = false;
+            if(players[i].crates == undefined){
+              players[i].crates = [0,0,0,0,0,0];
             }
             if(self.canGetIncome(players[i])){
               players[i].money += players[i].income;
