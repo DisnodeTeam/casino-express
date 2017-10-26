@@ -6,7 +6,7 @@ var config = require("../config");
 var upd;
 var Updater = require("../updater");
 Database.Connect().then(() => {
-    upd = new Updater(Database);
+    //upd = new Updater(Database);
 });
 
 router.use((req, res, next) => {
