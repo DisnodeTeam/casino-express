@@ -122,9 +122,6 @@ router.post("/ultra/", (req,res) =>{
     res.status(404).send({status:"Failed",error:"Could not find player with id: " + req.body.id + " in Database"});
   })
 })
-router.get("/time", (req, res) => {
-    res.status(200).send(upd.getTimeRemain());
-});
 router.get("/cobj",(req, res) => {
     Database.Find("casinoObj", {"id":"cobj"}).then((cobj) => {
         delete cobj[0]["_id"];
@@ -144,6 +141,92 @@ router.post("/cobj", (req,res) => {
         res.status(400).send({error: "No Body"});
     }
 })
+router.get("/income/:id", (req,res) => {
+  Database.Find("players", {"id": req.params.id}).then((players) => {
+    for (var i = 0; i < players.length; i++) {
+      if(players[i].id == req.params.id){
+        delete players[i]["_id"];
+        var p = players[i];
+        var now = parseInt(new Date().getTime());
+        var diff = now - p.lastIncome;
+        if(diff < 300000){
+          var t = parseTime(diff);
+          var tmsg = "";
+          if(t.days > 0){
+            tmsg = t.days + " Days, " + t.hours + " Hours, " + t.minutes + " Minutes, " + t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else if (t.hours > 0) {
+            tmsg = t.hours + " Hours, " + t.minutes + " Minutes, " + t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else if (t.minutes > 0) {
+            tmsg = t.minutes + " Minutes, " + t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else if (t.seconds > 0) {
+            tmsg = t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else {
+            tmsg = t.miliseconds + " Miliseconds"
+          }
+          res.status(200).send({
+            complete: false,
+            msg: "You must wait at least 5 minutes before requesting income again. Time since last Income: " + tmsg
+          })
+        }else {
+          if(diff >= 172800000)diff = 172800000;
+          var mult = diff / 1800000;
+          var toadd = (p.income * mult);
+          p.money += toadd;
+          var t = parseTime(diff);
+          var tmsg = "";
+          if(t.days > 0){
+            tmsg = t.days + " Days, " + t.hours + " Hours, " + t.minutes + " Minutes, " + t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else if (t.hours > 0) {
+            tmsg = t.hours + " Hours, " + t.minutes + " Minutes, " + t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else if (t.minutes > 0) {
+            tmsg = t.minutes + " Minutes, " + t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else if (t.seconds > 0) {
+            tmsg = t.seconds + " Seconds, " + t.miliseconds + " Miliseconds"
+          }else {
+            tmsg = t.miliseconds + " Miliseconds"
+          }
+          p.lastIncome = now;
+          Database.Update("players", {"id":p.id}, p).then(() => {
+              res.status(200).send({
+                complete: true,
+                given: toadd,
+                mult: mult,
+                time: tmsg
+              });
+          })
+        }
+        return;
+      }
+    }
+    res.status(404).send();
+  })
+})
+function parseTime(ms) {
+    var days = 0;
+    var hours = 0;
+    var minutes = 0;
+    var seconds = parseInt(ms / 1000);
+    var miliseconds = ms % 1000;
+    while (seconds > 60) {
+      minutes++;
+      seconds -= 60;
+      if (minutes == 60) {
+        hours++;
+        minutes = 0;
+      }
+      if(hours == 24){
+        days++
+        hours = 0;
+      }
+    }
+    return {
+      days: days,
+      hours: hours,
+      minutes: minutes,
+      seconds: seconds,
+      miliseconds: miliseconds
+    }
+}
 function parseMention(dataString){
     var self = this;
     var returnV = dataString;
