@@ -151,14 +151,8 @@ class Updater {
         self.DB.Find("players", {}).then(function(players) {
           for (var i = 0; i < players.length; i++) {
             delete players[i]["_id"];
-            if(players[i].prefs == undefined){
-              players[i].prefs = {
-                lang: "en",
-                embed: true
-              };
-            }
-            if(players[i].lastIncome == undefined){
-              players[i].lastIncome = parseInt(new Date().getTime());
+            if(players[i].lastClaim == undefined){
+              players[i].lastClaim = parseInt(new Date().getTime());
             }
             players[i].lastMessage = null;
             self.DB.Update("players", {"id":players[i].id}, players[i]);
