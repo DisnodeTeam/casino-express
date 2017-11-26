@@ -5,6 +5,7 @@ var Database = require("../DB");
 var config = require("../config");
 var upd;
 var Updater = require("../updater");
+const numeral = require('numeral');
 Database.Connect().then(() => {
   //upd = new Updater(Database);
 });
@@ -201,65 +202,45 @@ router.get("/income/:id", (req, res) => {
     res.status(404).send();
   })
 })
-//returns all items in market
-router.get("/market", (req, res) => {
-  Database.Find("market", {}).then((items) => {
-    for (var i = 0; i < items.length; i++) {
-      delete items[i]["_id"];
-    }
-    res.status(200).send(items);
-  })
-})
-//returns items by specific userID
-router.get("/market/:uid", (req, res) => {
-  Database.Find("market", { "sellerID": req.params.uid }).then((items) => {
-    for (var i = 0; i < items.length; i++) {
-      delete items[i]["_id"];
-    }
-    if (items.length == 0) {
-      res.status(404).send()
-    }
-    res.status(200).send(items);
-  })
-})
-router.get("/prefix/:id", (req, res) => {
-  Database.Find("players", { "id": req.params.id }).then((items) => {
-    for (var i = 0; i < items.length; i++) {
-      delete items[i]["_id"];
-    }
-    if (items.length == 0) {
-      res.status(200).send({ f: null });
-    }
-    res.status(200).send({ f: true, p: items[0].prefs.prefix });
-  })
-})
-router.post("/prefix/", (req, res) => {
-  if (req.body.id == undefined) {
-    res.status(400).send({ error: "Invalid Body - No ID" });
-    return;
-  }
-  if (req.body.prefix == undefined) {
-    res.status(400).send({ error: "Invalid Body - No Prefix" });
-    return;
-  }
-  Database.Find("players", { "id": req.body.id }).then((items) => {
-    for (var i = 0; i < items.length; i++) {
-      delete items[i]["_id"];
-    }
-    if (items.length == 0) {
-      res.status(200).send({ f: null });
-    }
-    items[0].prefs.prefix = req.body.prefix;
-    res.status(200).send();
-  })
-})
-// adds a new item
-router.post("/market/new", (req, res) => {
+router.post("/coin/", (req,res) => {
+  if(req.body.id){
+    if(req.body.bet){
+      Database.Find("players", { "id": req.params.id }).then((players) => {
+        for (var i = 0; i < players.length; i++) {
+          if (players[i].id == req.params.id) {
+            delete players[i]["_id"];
+            var bet = numeral(req.body.bet).value();
+            if (bet > 0 && bet <= players[i].money) {
+              if (req.body.pick != undefined) {
+                var pick = numeral(req.body.pick).value();
+                var flipinfo = {
+                  bet: bet,
+                  winnings: 0
+                }
+                switch (pick) {
+                  case 0:
 
-})
-//proccesses A purchase
-router.post("/market/buy/", (req, res) => {
+                    break;
+                  default:
 
+                }
+              }else {
+                res.status(400).send({ code:3, error: "Invalid Body - Missing pick pick value should be 0 or 1 for heads and tails" });
+              }
+            }else {
+              res.status(400).send({ code:3, error: "Invalid Body - Bad Bet Less than 0 or greater than player money" });
+            }
+            return;
+          }
+        }
+        res.status(400).send({ code:2, error: "Invalid Body - Bad Player ID" });
+      })
+    }else {
+      res.status(400).send({ code:1, error: "Invalid Body - Missing Bet" });
+    }
+  }else {
+    res.status(400).send({ code:0, error: "Invalid Body - Missing ID" });
+  }
 })
 
 function parseTime(ms) {

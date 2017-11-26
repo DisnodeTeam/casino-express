@@ -15,6 +15,7 @@
     "disnode-logger": "^0.1.1",
     "express": "^4.15.4",
     "mongodb": "^2.2.31",
-    "node-restful": "^0.2.6"
+    "node-restful": "^0.2.6",
+    "numeral": "^2.0.6"
   }
 }
