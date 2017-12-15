@@ -202,46 +202,6 @@ router.get("/income/:id", (req, res) => {
     res.status(404).send();
   })
 })
-router.post("/coin/", (req,res) => {
-  if(req.body.id){
-    if(req.body.bet){
-      Database.Find("players", { "id": req.params.id }).then((players) => {
-        for (var i = 0; i < players.length; i++) {
-          if (players[i].id == req.params.id) {
-            delete players[i]["_id"];
-            var bet = numeral(req.body.bet).value();
-            if (bet > 0 && bet <= players[i].money) {
-              if (req.body.pick != undefined) {
-                var pick = numeral(req.body.pick).value();
-                var flipinfo = {
-                  bet: bet,
-                  winnings: 0
-                }
-                switch (pick) {
-                  case 0:
-
-                    break;
-                  default:
-
-                }
-              }else {
-                res.status(400).send({ code:3, error: "Invalid Body - Missing pick pick value should be 0 or 1 for heads and tails" });
-              }
-            }else {
-              res.status(400).send({ code:3, error: "Invalid Body - Bad Bet Less than 0 or greater than player money" });
-            }
-            return;
-          }
-        }
-        res.status(400).send({ code:2, error: "Invalid Body - Bad Player ID" });
-      })
-    }else {
-      res.status(400).send({ code:1, error: "Invalid Body - Missing Bet" });
-    }
-  }else {
-    res.status(400).send({ code:0, error: "Invalid Body - Missing ID" });
-  }
-})
 
 function parseTime(ms) {
   var days = 0;
