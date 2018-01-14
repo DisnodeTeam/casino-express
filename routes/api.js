@@ -50,7 +50,11 @@ router.get("/players/:query", (req, res) => {
       }
     }
     for (var i = 0; i < found.length; i++) {
+      if (founf[i].banned) {
+        msg += "**" + found[i].name + "  (banned)**\n"
+      } else {
       msg += "**" + found[i].name + "**\n"
+    }
     }
     if (found.length == 1) {
       delete found[0]["_id"];
