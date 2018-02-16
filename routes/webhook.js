@@ -49,5 +49,4 @@ function checkVote(player) {
     }
   }
 }
-}
 module.exports = router;
