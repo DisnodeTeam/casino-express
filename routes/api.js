@@ -175,7 +175,9 @@ router.get("/income/:id", (req, res) => {
         } else {
           if (diff >= 172800000) diff = 172800000;
           var mult = diff / 1800000;
-          var toadd = (p.income * mult);
+          if(p.prestige != undefined){
+          var toadd = ((p.income * mult) * p.prestige.incomeMult);
+          } else var toadd = (p.income * mult);
           p.money += toadd;
           var t = parseTime(diff);
           var tmsg = "";
