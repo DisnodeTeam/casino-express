@@ -173,7 +173,7 @@ router.get("/income/:id", (req, res) => {
             msg: "You must wait at least 5 minutes before requesting income again. Time since last Income: " + tmsg
           })
         } else {
-          if (diff >= 172800000) diff = 172800000;
+          if (diff >= 345600000) diff = 345600000;
           var mult = diff / 1800000;
           if(p.prestige != undefined && p.prestige.incomeMult != undefined){
           var toadd = ((p.income * mult) * p.prestige.incomeMult);
