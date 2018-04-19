@@ -198,7 +198,8 @@ router.get("/income/:id", (req, res) => {
               complete: true,
               given: toadd,
               mult: mult,
-              time: tmsg
+              time: tmsg,
+              bal: p.money
             });
           })
         }
