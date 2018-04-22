@@ -178,7 +178,6 @@ router.get("/income/:id", (req, res) => {
           if(p.prestige != undefined && p.prestige.incomeMult != undefined){
           var toadd = ((p.income * mult) * p.prestige.incomeMult);
           } else var toadd = (p.income * mult);
-          p.money += toadd;
           var t = parseTime(diff);
           var tmsg = "";
           if (t.days > 0) {
@@ -193,13 +192,34 @@ router.get("/income/:id", (req, res) => {
             tmsg = t.miliseconds + " Miliseconds"
           }
           p.lastIncome = now;
+          var loanamount = 0
+          var loan = false
+          if (p.loan) {
+            if ((p.loan.due - new Date().getTime()) < 0) {
+              p.loan.interest = true
+              loan = true
+            toadd = toadd / 2
+            var needed = Math.round((p.loan.interest) ? (p.loan.amount * 1.003) - p.loan.payed : p.loan.amount - p.loan.payed)
+            if (toadd > needed) {
+              p.loan = null
+              loanamount = needed
+              toadd += (toadd-needed)
+            } else {
+              p.loan.payed += toadd
+              loanamount = toadd
+            }
+          }
+        }
+          p.money += toadd;
           Database.Update("players", { "id": p.id }, p).then(() => {
             res.status(200).send({
               complete: true,
               given: toadd,
               mult: mult,
               time: tmsg,
-              bal: p.money
+              bal: p.money,
+              loan,
+              loanamount
             });
           })
         }
