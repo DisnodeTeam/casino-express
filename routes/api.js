@@ -1,3 +1,4 @@
+/* eslint-disable */
 var express = require("express");
 var router = express.Router();
 var log = require("disnode-logger");
@@ -199,7 +200,7 @@ router.get("/income/:id", (req, res) => {
               p.loan.interest = true
               loan = true
             toadd = toadd / 2
-            var needed = Math.round((p.loan.interest) ? (p.loan.amount * 1.003) - p.loan.payed : p.loan.amount - p.loan.payed)
+            var needed = Math.round((p.loan.interest) ? (p.loan.amount * 1.03) - p.loan.payed : p.loan.amount - p.loan.payed)
             if (toadd > needed) {
               p.loan = null
               loanamount = needed
