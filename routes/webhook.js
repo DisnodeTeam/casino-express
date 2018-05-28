@@ -11,7 +11,7 @@ router.post("/", (req, res) => {
       id: req.body.user
     }).then((player) => {
       if (player[0] != undefined) {
-        if (checkVote(player[0]).pass) {
+        if (true) {
           if (player[0].voteCount == undefined) {
             player[0].voteCount = 1;
           } else {
@@ -29,24 +29,4 @@ router.post("/", (req, res) => {
   }
   res.status(200);
 });
-
-function checkVote(player) {
-  var currentDate = new Date().getTime();
-  if (player.lastVote == null) {
-    return {
-      pass: true
-    };
-  }
-  var targetMS = player.lastVote + (86400 * 1000);
-  var remainingMS = currentDate - targetMS;
-  if (remainingMS >= 0) {
-    return {
-      pass: true
-    }
-  } else {
-    return {
-      pass: false
-    }
-  }
-}
 module.exports = router;
